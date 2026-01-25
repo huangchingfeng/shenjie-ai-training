@@ -508,26 +508,46 @@ body {
     font-style: italic;
 }
 
-.card-output {
-    padding: 16px 24px;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+/* Simple Curriculum Card */
+.curriculum-card-simple {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #667eea;
 }
 
-.output-label {
-    background: #667eea;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 500;
+.curriculum-card-simple .time-badge {
+    flex-shrink: 0;
 }
 
-.output-text {
+.curriculum-card-simple .card-main h4 {
+    font-size: 1.1rem;
     color: #1a1a2e;
-    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.curriculum-card-simple .card-main ul {
+    list-style: none;
+}
+
+.curriculum-card-simple .card-main ul li {
+    padding: 4px 0;
+    padding-left: 20px;
+    position: relative;
+    color: #4a4a6a;
+    font-size: 0.95rem;
+}
+
+.curriculum-card-simple .card-main ul li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #667eea;
 }
 
 .lunch-break {
