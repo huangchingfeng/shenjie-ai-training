@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 週 AI 實戰練習 | 紳捷國際</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Homework Page Specific Styles */
+        .hw-hero {
+            padding: 120px 24px 60px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hw-hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 20% 50%, rgba(102,126,234,0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 50%, rgba(118,75,162,0.1) 0%, transparent 50%);
+        }
+        .hw-hero .container { position: relative; z-index: 1; }
+        .hw-hero h1 { font-size: 2.5rem; font-weight: 900; margin-bottom: 16px; }
+        .hw-hero .subtitle { color: #4a4a6a; font-size: 1.1rem; margin-bottom: 24px; }
+        .hw-hero .hw-stats {
+            display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+        }
+        .hw-hero .hw-stat {
+            background: white; padding: 12px 24px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .hw-hero .hw-stat strong { color: #667eea; }
+
+        /* Week Tabs */
+        .week-tabs-section { padding: 0 24px; background: #fff; position: sticky; top: 60px; z-index: 100; border-bottom: 1px solid #eee; }
+        .week-tabs {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; gap: 4px; overflow-x: auto; padding: 12px 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .week-tabs::-webkit-scrollbar { height: 0; }
+        .week-tab {
+            padding: 10px 20px; border-radius: 10px; cursor: pointer;
+            font-size: 0.9rem; font-weight: 500; white-space: nowrap;
+            background: #f5f7fa; color: #4a4a6a; border: none;
+            transition: all 0.3s;
+        }
+        .week-tab:hover { background: #e8ecf5; }
+        .week-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .week-tab .tab-emoji { margin-right: 4px; }
+
+        /* Week Content */
+        .week-content { padding: 40px 24px 80px; background: #f8f9fc; min-height: 60vh; }
+        .week-panel { display: none; max-width: 1200px; margin: 0 auto; }
+        .week-panel.active { display: block; }
+
+        .week-header {
+            text-align: center; margin-bottom: 40px;
+        }
+        .week-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; }
+        .week-header .week-tool {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: white; padding: 8px 20px; border-radius: 30px;
+            font-size: 0.9rem; color: #667eea; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 8px;
+        }
+        .week-header .week-tool a {
+            color: #667eea; text-decoration: none; font-weight: 500;
+        }
+        .week-header .week-tool a:hover { text-decoration: underline; }
+        .week-header .week-focus { color: #6a6a8a; font-size: 0.95rem; }
+
+        /* Day Section */
+        .day-section { margin-bottom: 36px; }
+        .day-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 16px;
+        }
+        .day-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+        }
+        .day-difficulty { font-size: 0.8rem; color: #6a6a8a; font-weight: 400; }
+
+        /* Homework Cards */
+        .hw-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+        .hw-card {
+            background: white; border-radius: 16px; padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        .hw-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+        .hw-card.option-b { border-left-color: #764ba2; }
+
+        .hw-card-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;
+        }
+        .option-badge {
+            font-size: 0.8rem; font-weight: 700; color: white; padding: 3px 10px;
+            border-radius: 6px; background: #667eea;
+        }
+        .option-b .option-badge { background: #764ba2; }
+        .hw-card h4 { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; flex: 1; }
+
+        .dept-tags { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+        .dept-tag {
+            font-size: 0.75rem; padding: 3px 10px; border-radius: 12px;
+            background: rgba(102,126,234,0.08); color: #667eea; font-weight: 500;
+        }
+
+        .hw-card .description { color: #4a4a6a; font-size: 0.95rem; line-height: 1.7; margin-bottom: 12px; }
+        .hw-card .hint {
+            background: #f8f9fc; padding: 12px 16px; border-radius: 10px;
+            font-size: 0.85rem; color: #6a6a8a; line-height: 1.6;
+        }
+        .hw-card .hint::before { content: '💡 '; }
+
+        /* Take Away */
+        .takeaway-box {
+            background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%);
+            border: 2px solid rgba(102,126,234,0.15);
+            padding: 24px 28px; border-radius: 16px; margin-top: 36px;
+        }
+        .takeaway-box h4 { color: #667eea; font-size: 1rem; margin-bottom: 8px; }
+        .takeaway-box p { color: #4a4a6a; font-size: 0.95rem; line-height: 1.7; }
+
+        /* Milestone */
+        .milestone {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 32px; border-radius: 16px; margin-top: 36px; text-align: center;
+        }
+        .milestone h4 { font-size: 1.25rem; margin-bottom: 12px; }
+        .milestone p { color: rgba(255,255,255,0.85); line-height: 1.7; }
+
+        /* Safety Notice */
+        .safety-notice {
+            background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(245,158,11,0.04) 100%);
+            border: 2px solid rgba(245,158,11,0.2);
+            padding: 20px 24px; border-radius: 12px; margin-bottom: 32px;
+        }
+        .safety-notice h4 { color: #d97706; font-size: 0.95rem; margin-bottom: 8px; }
+        .safety-notice ul { list-style: none; }
+        .safety-notice ul li { padding: 4px 0 4px 20px; position: relative; color: #6a6a8a; font-size: 0.9rem; }
+        .safety-notice ul li::before { content: "⚠"; position: absolute; left: 0; }
+
+        /* Tools Quick Access */
+        .tools-bar {
+            padding: 24px; background: white; border-bottom: 1px solid #eee;
+        }
+        .tools-bar .container {
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;
+        }
+        .tools-bar .label { font-size: 0.85rem; color: #6a6a8a; font-weight: 500; }
+        .tool-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+            text-decoration: none; color: #4a4a6a; background: #f5f7fa;
+            transition: all 0.2s;
+        }
+        .tool-link:hover { background: #667eea; color: white; }
+
+        /* Footer override for homework */
+        .hw-footer { margin-top: 0; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hw-hero h1 { font-size: 1.75rem; }
+            .hw-cards { grid-template-columns: 1fr; }
+            .week-tab { padding: 8px 14px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">AI 辦公實戰</span>
+                <span class="logo-badge">紳捷專屬</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">課程介紹</a></li>
+                <li><a href="homework.html" style="color: #667eea; font-weight: 700;">每週練習</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hw-hero">
+        <div class="container">
+            <div class="hero-badge">
+                <span class="badge-icon">📝</span>
+                <span>課後練習專區</span>
+            </div>
+            <h1>8 週 AI <span class="gradient-text">實戰練習</span></h1>
+            <p class="subtitle">每週一、三、五各 2 題二選一，持續練習養成 AI 工作習慣</p>
+            <div class="hw-stats">
+                <div class="hw-stat"><strong>8</strong> 週</div>
+                <div class="hw-stat"><strong>48</strong> 題</div>
+                <div class="hw-stat"><strong>6</strong> 種工具</div>
+                <div class="hw-stat"><strong>4</strong> 大部門</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Quick Bar -->
+    <div class="tools-bar">
+        <div class="container">
+            <span class="label">常用工具：</span>
+            <a href="https://chatgpt.com" target="_blank" class="tool-link">💬 ChatGPT</a>
+            <a href="https://gemini.google.com" target="_blank" class="tool-link">✨ Gemini</a>
+            <a href="https://www.perplexity.ai" target="_blank" class="tool-link">🔍 Perplexity</a>
+            <a href="https://notebooklm.google.com" target="_blank" class="tool-link">📓 NotebookLM</a>
+            <a href="https://manus.im" target="_blank" class="tool-link">🤖 Manus</a>
+            <a href="https://v2.chateverywhere.app/zh/meeting-transcription" target="_blank" class="tool-link">🎙️ 會議記錄</a>
+        </div>
+    </div>
+
+    <!-- Week Tabs -->
+    <div class="week-tabs-section">
+        <div class="week-tabs">
+            <button class="week-tab active" data-week="1"><span class="tab-emoji">1️⃣</span> 黃金三角入門</button>
+            <button class="week-tab" data-week="2"><span class="tab-emoji">2️⃣</span> 工作場景進階</button>
+            <button class="week-tab" data-week="3"><span class="tab-emoji">3️⃣</span> Perplexity 搜尋</button>
+            <button class="week-tab" data-week="4"><span class="tab-emoji">4️⃣</span> Deep Research</button>
+            <button class="week-tab" data-week="5"><span class="tab-emoji">5️⃣</span> AI 會議記錄</button>
+            <button class="week-tab" data-week="6"><span class="tab-emoji">6️⃣</span> AI 簡報製作</button>
+            <button class="week-tab" data-week="7"><span class="tab-emoji">7️⃣</span> NotebookLM 分析</button>
+            <button class="week-tab" data-week="8"><span class="tab-emoji">8️⃣</span> 綜合應用</button>
+        </div>
+    </div>
+
+    <!-- Week Content -->
+    <div class="week-content">
+
+        <!-- ===== WEEK 1 ===== -->
+        <div class="week-panel active" data-week="1">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://chatgpt.com" target="_blank">ChatGPT</a> 或 <a href="https://gemini.google.com" target="_blank">Gemini</a></div>
+                <h2>第 1 週｜黃金三角指令 — 入門篇</h2>
+                <p class="week-focus">學會「角色 x 情境 x 期望」三角框架，讓 AI 產出更精準的內容</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 基本功：角色 x 情境 x 期望 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>Lab-dip 寄樣通知信</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">用黃金三角框架，請 AI 寫一封英文 Email 給美國客戶，通知新一季 lab-dip（色卡）已寄出，附上追蹤號碼和預計到貨時間。</p>
+                        <div class="hint">角色設定為「資深面料搜尋專員」，情境加入「客戶催了兩次」，期望「語氣專業、簡潔、表達歉意」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>會議通知 + 議程</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">會計行政</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">用黃金三角框架，請 AI 寫一封中文 Email 通知全公司：下週二下午 2 點召開「季度採購檢討會議」，附上 3-5 項議程大綱。</p>
+                        <div class="hint">用你們公司真實會討論的議題（如出貨達成率、品質回饋、下季排程）當情境</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 進階技巧：分步驟 + 給範例 + 設限制 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>WIP Report 整理</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">用黃金三角 + 分步驟指令，請 AI 整理一份 WIP（Work-in-Progress）Report，表格格式含 PO#/客戶/品項/狀態/預計出貨日，限 10 筆。先給一筆範例讓 AI 照格式生成。</p>
+                        <div class="hint">用「設限制」技巧，例如「狀態只能是：In Production / QC Pending / Ready to Ship / Shipped」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>供應商聯絡清單</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">請 AI 建立一份「常用供應商聯絡清單」模板：表格含供應商名稱/國家/主要產品/聯絡人/Email/最近合作日期，給一筆範例讓 AI 照格式填 5 筆假資料。</p>
+                        <div class="hint">用「設限制」技巧，例如「每欄不超過 20 字」「國家只列越南、中國、印尼、柬埔寨」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：客戶溝通 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>客戶抱怨色差回覆</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">客戶來信抱怨布料色差超出容許範圍（delta E 超標），用黃金三角框架寫一封英文回覆信，包含：致歉、原因說明、補救方案、防止再發措施。</p>
+                        <div class="hint">在指令中加入「tone: professional but empathetic」讓 AI 掌握語氣</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>工廠交期延遲內部通報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">工廠產能問題導致訂單延遲 2 週，用黃金三角框架寫一份中文內部通報 Email，通知船務和主管，包含影響範圍、partial shipment 方案、各部門配合事項。</p>
+                        <div class="hint">對內通報和對外通知語氣不同 — 對內要清楚講「接下來誰要做什麼」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>學會用「角色 x 情境 x 期望」三角框架，加上「分步驟、給範例、設限制」三個進階技巧，讓 AI 產出更貼近你工作需求的內容。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 2 ===== -->
+        <div class="week-panel" data-week="2">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://chatgpt.com" target="_blank">ChatGPT</a> 或 <a href="https://gemini.google.com" target="_blank">Gemini</a></div>
+                <h2>第 2 週｜黃金三角指令 — 工作場景進階</h2>
+                <p class="week-focus">把黃金三角框架應用到更多真實場景，包含跨部門溝通和專業文件</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 跨部門溝通 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>船務文件確認信</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">寫一封英文 Email 給報關行（Customs Broker），確認一筆出貨的 Packing List、Commercial Invoice、B/L 細節，請對方在週五前回覆。</p>
+                        <div class="hint">在指令中加入「給範例」技巧 — 先列出一筆出貨資料（PO#、品項、箱數），讓 AI 照格式寫</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>品質異常通知工廠</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">寫一封英文 Email 給越南工廠，通知縮水率超標（shrinkage test failed，參照 AATCC 135 標準），要求 3 個工作天內提出 root cause analysis 和 corrective action plan。</p>
+                        <div class="hint">語氣要堅定但維持合作關係。可在指令中加入「tone: firm but cooperative」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 專業文件撰寫 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>AI 輔助 OTB 預算計算</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">把簡化版 OTB（Open-to-Buy）數據貼進 ChatGPT（期初庫存 $500K、銷售預測 $800K、在途 $200K、期末目標 $400K），請 AI 計算 OTB 金額並用白話解釋邏輯。</p>
+                        <div class="hint">AI 不只會寫信，也能當「Excel 公式顧問」！試著追問「如果銷售預測上調 10%，OTB 會變多少？」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>部門月報草稿</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">用黃金三角框架，請 AI 撰寫「部門月報」草稿，含本月出貨量、客戶回饋摘要、異常事件、下月重點。可用真實數據或假資料。</p>
+                        <div class="hint">先列出 3-5 個重點數據，再讓 AI 幫你組織成月報格式</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：高階溝通 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>Cargo Claim 索賠信</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">一批出口到美國的女裝因海運貨櫃進水，30 箱約 1,200 件受潮發霉。用黃金三角寫一封英文 Claim Letter 給船公司，含受損描述、金額計算、理賠期限。</p>
+                        <div class="hint">索賠信需要精確的數據和正式語氣。可加入指令「附上受損清單表格：箱號/品項/數量/單價/損失金額」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>季度 KPI 達成回顧</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">請 AI 幫你寫一封中文 Email 給主管，回顧本季 KPI 達成情況：達成的指標、未達成的原因、下季改善計畫。</p>
+                        <div class="hint">先列出 3 個你的 KPI 項目和達成數字，讓 AI 幫你組織成專業的回顧報告</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>黃金三角框架不只能寫 Email，還能處理專業文件（OTB 計算、索賠信、KPI 報告）。關鍵是「給 AI 足夠的專業情境和數據」。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 3 ===== -->
+        <div class="week-panel" data-week="3">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://www.perplexity.ai" target="_blank">Perplexity</a></div>
+                <h2>第 3 週｜AI 搜尋力 — Perplexity</h2>
+                <p class="week-focus">用 AI 搜尋引擎快速取得有來源的產業情報，取代傳統 Google 搜尋</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 基礎搜尋：產業動態 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>美國服飾零售趨勢</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">用 Perplexity 搜尋「2026 美國服飾零售業最新趨勢」，整理出 3 個對紳捷業務最有影響的重點，每個重點附上來源連結。</p>
+                        <div class="hint">觀察 Perplexity 如何自動附上引用來源，和 Google 搜尋有什麼不同？</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>永續面料認證趨勢</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">搜尋「sustainable fabric certifications 2026（GOTS、GRS、OEKO-TEX）」，整理出美國客戶目前最常要求的 3 種認證和它們的差異。</p>
+                        <div class="hint">試著用英文搜尋再用中文追問，比較結果差異</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 精準搜尋：法規與政策 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>美國關稅政策查詢</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">搜尋「美國對中國及東南亞紡織品最新關稅政策 2026」，整理成一頁摘要，標註稅率變動品項。特別關注越南 CPTPP 優惠稅率。</p>
+                        <div class="hint">用追問功能（Follow-up）深入挖掘特定品項（如針織 vs 梭織）的稅率差異</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>越南勞動法規查詢</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">搜尋「越南或柬埔寨 2026 最新勞動法規（最低工資、加班限制）」，整理成表格，方便評估海外工廠人力成本。</p>
+                        <div class="hint">這類資訊在評估新工廠時非常實用，可以搭配供應商背景調查一起使用</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：商務情報 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>供應商背景調查</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">調查一家你正在評估的越南或印尼成衣工廠，整理出：公司規模、主要客戶、產能、有無負面新聞。</p>
+                        <div class="hint">試試搜尋「[工廠名] compliance audit」或「[工廠名] social audit result」，美國客戶通常要求 BSCI / WRAP / SA8000 稽核</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>美國客戶動態追蹤</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">搜尋紳捷的主要客戶（JC Penney 或 Target）的最新業績和採購策略變化，整理出 3 個跟紳捷業務相關的重點。</p>
+                        <div class="hint">了解客戶的策略方向，才能提前準備因應</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>Perplexity 的最大優勢是「自動附上來源」。但記得：AI 搜到的不一定 100% 正確，重要資訊要交叉查核。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 4 ===== -->
+        <div class="week-panel" data-week="4">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://gemini.google.com" target="_blank">Gemini Deep Research</a></div>
+                <h2>第 4 週｜深度研究 — Gemini Deep Research</h2>
+                <p class="week-focus">用 Deep Research 產出深度報告，重點不是「讓 AI 跑報告」，而是「你能從報告中挖出什麼」</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 產出報告 + 評估可信度 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>客戶採購策略研究</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">研究 JC Penney 或 Target 的「Private Label 採購策略變化」。報告產出後：(1) 標記 3 個最有用段落 (2) 標記 1 個需驗證的資訊 (3) 寫 100 字摘要給主管。</p>
+                        <div class="hint">不只是讓 AI 跑報告，更重要的是「你怎麼判斷哪些資訊可信、哪些需要驗證」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>負責品項的價格趨勢</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">研究你負責的品項（針織布、牛仔布、功能性面料等）的全球價格趨勢。報告產出後：(1) 截圖結構 (2) 標記 2 個有影響的趨勢 (3) 寫 100 字備忘錄。</p>
+                        <div class="hint">記錄 Deep Research 花了多少時間、搜了幾個來源，跟 Perplexity 比較看看</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 工具比較 + 深度應用 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>Perplexity vs Deep Research</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">同一問題「越南成衣出口最新稅率政策」，分別用兩個工具搜尋。比較：速度、深度、來源豐富度，寫下結論：什麼時候用哪個。</p>
+                        <div class="hint">Perplexity 像「快速查字典」，Deep Research 像「請人寫研究報告」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>工廠調查 → 內部備忘錄</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">用 Deep Research 研究一家正在評估的工廠或產區，報告產出後用 ChatGPT 整理成 200 字內部備忘錄，附上你的評估建議。</p>
+                        <div class="hint">從「看報告」升級為「用報告」— Deep Research 是初稿，你的判斷才是重點</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：策略分析 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>採購代理商轉型案例</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">研究「全球成衣 Buying Agent 數位轉型案例」。挑出 1 個跟紳捷最相似的案例，寫 200 字分析：這家做了什麼、紳捷可以學什麼。</p>
+                        <div class="hint">不需要讀完整份報告，聚焦在跟紳捷規模和業務最接近的案例</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>供應鏈 AI 應用探索</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">研究「紡織成衣供應鏈的 AI 應用案例」，聚焦品質檢測和訂單預測。挑出 2 個紳捷可能導入的應用，各寫 100 字說明。</p>
+                        <div class="hint">思考「這個 AI 應用如果導入紳捷，是哪個部門會受益最大？」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>Deep Research 能自動產出深度報告，但「讓 AI 跑報告」只完成 50%，「從報告中提煉可行動的結論」才是另外 50%。</p>
+            </div>
+
+            <div class="milestone">
+                <h4>🏁 恭喜完成前半段！</h4>
+                <p>請在群組分享：(1) 這 4 週你最喜歡哪一題？(2) 哪個工具對工作最有幫助？<br>HR 會在這週統計完成率，並討論後半段是否需要調整。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 5 ===== -->
+        <div class="week-panel" data-week="5">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://v2.chateverywhere.app/zh/meeting-transcription" target="_blank">會議記錄小幫手</a> + <a href="https://chatgpt.com" target="_blank">ChatGPT</a></div>
+                <h2>第 5 週｜AI 會議記錄</h2>
+                <p class="week-focus">用 AI 把會議錄音轉成結構化記錄，原本 30 分鐘整理 → 5 分鐘搞定</p>
+            </div>
+
+            <div class="safety-notice">
+                <h4>⚠️ 安全提醒</h4>
+                <ul>
+                    <li>錄音前請先告知與會者（尤其是外部通話）</li>
+                    <li>如果公司有錄音政策限制，可用「自己唸一段報告」的方式練習</li>
+                    <li>逐字稿如涉及機密，不要貼到公開群組</li>
+                </ul>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 錄音轉文字基礎 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>YouTube 影片轉逐字稿</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">找一段 5 分鐘的中文商業 YouTube 影片，用會議記錄小幫手轉成逐字稿，檢查準確度。</p>
+                        <div class="hint">先熟悉工具操作，感受「語音 → 文字」的速度和品質</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>模擬工作錄音轉文字</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">用手機錄 3 分鐘語音：模擬跟同事討論訂單出貨進度（加入英文術語如 PO number、shipment date），轉成逐字稿。</p>
+                        <div class="hint">測試 AI 對中英文混雜的成衣術語辨識效果如何</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 逐字稿 → 結構化筆記 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>英文視訊會議整理</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">模擬（或使用）跟越南工廠的英文視訊會議逐字稿，丟進 ChatGPT 整理成：「中文三句話摘要 + 討論重點 + 待辦事項（含負責人和期限）」。</p>
+                        <div class="hint">體驗 AI 處理「英文逐字稿 → 中文會議記錄」的能力</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>客戶電話紀錄整理</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">模擬一通 Conference Call 內容（文字寫出對話，含訂單確認、交期討論），丟進 ChatGPT 整理成 Meeting Minutes 格式。</p>
+                        <div class="hint">養成習慣後，每通重要電話都有正式的 Meeting Minutes 存檔</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：完整流程 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>真實內部會議全流程</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">本週任何內部會議，完成：錄音 → 轉逐字稿 → ChatGPT 整理摘要 → 跟一位與會同事確認正確 → 存檔或寄出。</p>
+                        <div class="hint">重點流程：AI 產出 → 人工確認 → 才發出。不要 AI 整理完就直接寄</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>工作討論錄音整理</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">錄一段跟同事討論工作的對話（5 分鐘），完成：錄音 → 轉文字 → 整理「摘要 + 待辦」→ 跟對方確認。</p>
+                        <div class="hint">如果不方便錄真實會議，可以跟同事約一段 5 分鐘的「練習對話」</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>AI 會議記錄的完整流程是「錄音 → 轉文字 → AI 整理 → 人工確認 → 發出」。最容易省時間的應用，建議養成習慣！</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 6 ===== -->
+        <div class="week-panel" data-week="6">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://gemini.google.com" target="_blank">Gemini Canvas</a> / <a href="https://manus.im" target="_blank">Manus</a></div>
+                <h2>第 6 週｜AI 簡報製作</h2>
+                <p class="week-focus">用 AI 快速製作工作簡報，原本 3-4 小時的 PPT → 幾分鐘產出初稿</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 快速簡報入門（3 頁）<span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>部門週報簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">用 Gemini Canvas 製作 3 頁簡報：封面、本週成果（含數據）、下週計畫。</p>
+                        <div class="hint">先用一段文字描述每頁內容，例如「第 2 頁：本週出貨 15 筆，金額 $120K，準時率 93%」</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>5 週 AI 學習心得簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">用 Gemini Canvas 製作 3 頁簡報，分享前 5 週學 AI 的心得：最好用的工具、最驚喜的應用、推薦功能。</p>
+                        <div class="hint">這份可以拿來跟同事分享！用自己的真實體驗寫最有說服力</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 進階簡報（3-5 頁）<span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>月度 WIP Report 簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span></div>
+                        <p class="description">用 Manus 製作「月度 WIP 報告」簡報（3-5 頁）：封面、在製訂單總覽、延遲分析、品質回顧、下月重點。</p>
+                        <div class="hint">比較 Gemini Canvas 和 Manus 的差異，你覺得哪個更適合你？</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>工廠稽核報告簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">用 Manus 製作「Factory Audit Report」簡報（3-5 頁）：工廠資料、產能評估、品質管理、compliance 評分、合作建議。</p>
+                        <div class="hint">試著加入評分表格（如品質 4/5、交期 3/5），讓簡報更有說服力</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：對外簡報（5 頁）<span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>客戶提案英文簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">製作給美國客戶的英文簡報（5 頁）：公司簡介、服務範圍、品質管控、供應鏈優勢、合作邀請。</p>
+                        <div class="hint">這可以直接拿來用！想像要在 15 分鐘內讓新客戶了解紳捷</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>公司簡介雙語簡報</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">製作中英雙語公司簡介（5 頁）：公司沿革、四大部門、主要客戶、品質認證、聯絡方式。</p>
+                        <div class="hint">想像你在國際紡織展（Premiere Vision）的攤位上用 5 分鐘介紹紳捷</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>AI 簡報工具不是取代你的思考，而是取代「排版和美化」的時間。你負責內容和數據，AI 負責讓它變好看。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 7 ===== -->
+        <div class="week-panel" data-week="7">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：<a href="https://notebooklm.google.com" target="_blank">NotebookLM</a></div>
+                <h2>第 7 週｜NotebookLM 文件分析</h2>
+                <p class="week-focus">用 AI 分析長文件、比對多份文件，大幅縮短讀合約和核對文件的時間</p>
+            </div>
+
+            <div class="safety-notice">
+                <h4>⚠️ 文件上傳安全提醒</h4>
+                <ul>
+                    <li>上傳前請確認公司政策允許上傳到外部 AI 工具</li>
+                    <li>如有顧慮：可把公司名和金額改成假的，或用網路範例文件練習</li>
+                    <li>不確定的話，請先詢問主管</li>
+                </ul>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 基礎操作：上傳與摘要 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>英文合約快速摘要</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">上傳一份英文 PDF（採購合約或 Vendor Manual）到 NotebookLM，請它用中文摘要 5 個重點，再追問你最關心的條款。</p>
+                        <div class="hint">先問「重點是什麼」，再針對感興趣的部分深入追問</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>Lab-dip Approval Sheet 分析</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">面料搜尋</span></div>
+                        <p class="description">上傳 2-3 份客戶退回的 lab-dip approval sheet（PDF），請 NotebookLM：整理通過/退回狀態、列出修改要求、產出 summary email 給布廠。</p>
+                        <div class="hint">面料部門每週都在處理 lab-dip 退件，這個應用可以直接用在工作中</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 進階應用：多文件比對 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>出貨文件交叉比對</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">上傳同筆出貨的 Packing List 和 Commercial Invoice 到同一個 Notebook，問：「這兩份文件的品項數量和金額是否一致？如有差異請列出。」</p>
+                        <div class="hint">操作步驟：在 Notebook 中點「新增來源」依序上傳 → 在對話框直接提問。原本 30-60 分鐘的比對，幾秒搞定</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>海運費用報價比較</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">船務國貿</span><span class="dept-tag">會計行政</span></div>
+                        <p class="description">上傳 2-3 家運輸公司的 Freight Quotation，請 NotebookLM 整理成比較表格：航線、運費、transit time、附加費、有效期限。</p>
+                        <div class="hint">以後收到多家報價，先丟進 NotebookLM 就能快速比較</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 實戰挑戰：深度分析 <span class="day-difficulty">| 挑戰</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>合約風險審查</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">採購跟單</span><span class="dept-tag">船務國貿</span></div>
+                        <p class="description">上傳英文採購合約。先問「列出所有跟 penalty 相關的條款」→ 追問中文翻譯和風險等級 → 再問「哪些建議跟客戶談判修改？」</p>
+                        <div class="hint">把大任務拆成小步驟提問，效果比一次問三件事好</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>客戶 Vendor Manual 解讀</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">上傳美國客戶的 Vendor Manual，請 NotebookLM：整理出貨要求 checklist、列出罰款條款和金額、標註新規定。</p>
+                        <div class="hint">JC Penney 和 Target 的 Vendor Manual 動輒 80-100 頁，NotebookLM 是最好的閱讀夥伴</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="takeaway-box">
+                <h4>📌 本週 Take Away</h4>
+                <p>NotebookLM 最大價值是「讓你用問的方式讀文件」。合約、Vendor Manual、報價單 — 以後收到長文件，第一步就是丟進 NotebookLM。</p>
+            </div>
+        </div>
+
+        <!-- ===== WEEK 8 ===== -->
+        <div class="week-panel" data-week="8">
+            <div class="week-header">
+                <div class="week-tool">🛠️ 本週工具：自由選擇</div>
+                <h2>第 8 週｜綜合應用 + 期末回顧</h2>
+                <p class="week-focus">把前 7 週學的工具串聯起來，解決一個完整的工作問題</p>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週一</span> 回顧 + 輕量串聯 <span class="day-difficulty">| 暖身</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>7 週最佳作品回顧</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">回顧前 7 週作業，挑出 3 個最滿意的，用 ChatGPT 整理成「我的 AI 學習作品集」（題目 → 工具 → 產出 → 對工作的幫助）。</p>
+                        <div class="hint">回顧的過程會讓你發現自己進步了多少！</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>快速串聯：搜尋 → 摘要</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">選一個工作議題，用 Perplexity 搜尋，再用 ChatGPT 整理成 300 字摘要。只需 2 工具、15 分鐘。</p>
+                        <div class="hint">串聯不需要很複雜，「搜尋 + 整理」就是最實用的日常組合</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週三</span> 實戰串聯挑戰 <span class="day-difficulty">| 進階</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>會議 → 摘要 → 任務分配</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">完成流程：會議逐字稿 → ChatGPT 整理摘要和待辦 → 用 AI 寫任務分配 Email → 跟同事確認。</p>
+                        <div class="hint">把前面學的多個工具連續用，像流水線一樣完成完整工作</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>文件分析 → 重點 → 報告</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">找一份工作文件，完成：NotebookLM 分析 → ChatGPT 整理重點 → 寫一封摘要 Email 或建議書給主管。</p>
+                        <div class="hint">這是日常最常用的「收到文件 → 消化 → 回覆」流程</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-section">
+                <div class="day-label"><span class="day-badge">週五</span> 期末作業 <span class="day-difficulty">| 完成！</span></div>
+                <div class="hw-cards">
+                    <div class="hw-card">
+                        <div class="hw-card-header"><span class="option-badge">A</span><h4>心得報告（300 字）</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">回答 4 個問題：(1) 最常用哪個工具？(2) 哪題對工作幫助最大？(3) AI 每週省多少時間？(4) 接下來怎麼持續用 AI？</p>
+                        <div class="hint">誠實寫就好，沒有標準答案，重點是反思自己的成長</div>
+                    </div>
+                    <div class="hw-card option-b">
+                        <div class="hw-card-header"><span class="option-badge">B</span><h4>我的 AI 工具箱（一頁圖文）</h4></div>
+                        <div class="dept-tags"><span class="dept-tag">全體</span></div>
+                        <p class="description">用 Gemini Canvas 製作一張 A4「我的 AI 工具箱」：列出最常用的 3 個工具，每個寫場景和推薦語。</p>
+                        <div class="hint">這張可以印出來貼在桌上，隨時提醒自己用 AI</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="milestone">
+                <h4>🎉 恭喜完成 8 週 AI 實戰練習！</h4>
+                <p>最重要的不是學會了幾個工具，而是養成了「遇到問題先問 AI」的習慣。<br>繼續用，越用越順手！</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer hw-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>8 週 AI 實戰練習</p>
+                <p>紳捷國際企業有限公司 課後練習專區</p>
+            </div>
+            <div class="footer-instructor">
+                <p>講師：黃敬峰（AI 峰哥）</p>
+                <p>交點文化股份有限公司</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Week Tab Switching
+        const tabs = document.querySelectorAll('.week-tab');
+        const panels = document.querySelectorAll('.week-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const week = tab.dataset.week;
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelector(`.week-panel[data-week="${week}"]`).classList.add('active');
+                // Scroll to top of content
+                document.querySelector('.week-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Mobile Menu
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        if (hamburger) {
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                hamburger.classList.toggle('active');
+            });
+        }
+
+        // Navbar shadow on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.style.boxShadow = window.scrollY > 50 ? '0 2px 20px rgba(0,0,0,0.1)' : 'none';
+        });
+
+        // Animate cards on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+        document.querySelectorAll('.hw-card, .takeaway-box, .milestone, .safety-notice').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(15px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
